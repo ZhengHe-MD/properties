@@ -7,7 +7,7 @@ import (
 var (
 	InvalidUnmarshalError = errors.New("v must be a non-nil struct pointer")
 	InvalidMarshalError   = errors.New("v must be a struct or a struct pointer")
-	InvalidPropBytes 	  = errors.New("bytes are not from valid .properties config")
+	InvalidPropBytes      = errors.New("bytes are not from valid .properties config")
 	UnsupportedTypeError  = errors.New("unsupported type")
 )
 

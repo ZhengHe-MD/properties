@@ -62,19 +62,32 @@ func devalue(key string, v reflect.Value) ([]byte, error) {
 			}
 			data = append(data, d...)
 		}
-	case reflect.String: fallthrough
-	case reflect.Int: fallthrough
-	case reflect.Int8: fallthrough
-	case reflect.Int16: fallthrough
-	case reflect.Int32: fallthrough
-	case reflect.Int64: fallthrough
-	case reflect.Float32: fallthrough
-	case reflect.Float64: fallthrough
-	case reflect.Bool: fallthrough
-	case reflect.Uint: fallthrough
-	case reflect.Uint8: fallthrough
-	case reflect.Uint16: fallthrough
-	case reflect.Uint32: fallthrough
+	case reflect.String:
+		fallthrough
+	case reflect.Int:
+		fallthrough
+	case reflect.Int8:
+		fallthrough
+	case reflect.Int16:
+		fallthrough
+	case reflect.Int32:
+		fallthrough
+	case reflect.Int64:
+		fallthrough
+	case reflect.Float32:
+		fallthrough
+	case reflect.Float64:
+		fallthrough
+	case reflect.Bool:
+		fallthrough
+	case reflect.Uint:
+		fallthrough
+	case reflect.Uint8:
+		fallthrough
+	case reflect.Uint16:
+		fallthrough
+	case reflect.Uint32:
+		fallthrough
 	case reflect.Uint64:
 		return toPropLineBytes(key, fmt.Sprint(v.Interface())), nil
 	}

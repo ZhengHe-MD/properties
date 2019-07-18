@@ -13,54 +13,54 @@ func TestMarshal__complex_usages(t *testing.T) {
 	}
 
 	type S struct {
-		S1 string `properties:"s1"`
-		I1 int    `properties:"i1"`
-		I2 int8   `properties:"i2"`
-		I3 int16  `properties:"i3"`
-		I4 int32  `properties:"i4"`
-		I5 int64  `properties:"i5"`
-		UI1 uint  `properties:"ui1"`
-		UI2 uint8 `properties:"ui2"`
-		UI3 uint16 `properties:"ui3"`
-		UI4 uint32 `properties:"ui4"`
-		UI5 uint64 `properties:"ui5"`
-		F1 float32 `properties:"f1"`
-		F2 float64 `properties:"f2"`
-		B1 bool `properties:"b1"`
-		B2 bool `properties:"b2"`
-		Slice1 []int `properties:"slice1"`
-		Slice2 []*A  `properties:"slice2"`
-		Map1   map[string]string `properties:"map1"`
-		Map2   map[string]*A `properties:"map2"`
-		Pt1    *A `properties:"pt1"`
-		Struct1 A `properties:"st1"`
+		S1      string            `properties:"s1"`
+		I1      int               `properties:"i1"`
+		I2      int8              `properties:"i2"`
+		I3      int16             `properties:"i3"`
+		I4      int32             `properties:"i4"`
+		I5      int64             `properties:"i5"`
+		UI1     uint              `properties:"ui1"`
+		UI2     uint8             `properties:"ui2"`
+		UI3     uint16            `properties:"ui3"`
+		UI4     uint32            `properties:"ui4"`
+		UI5     uint64            `properties:"ui5"`
+		F1      float32           `properties:"f1"`
+		F2      float64           `properties:"f2"`
+		B1      bool              `properties:"b1"`
+		B2      bool              `properties:"b2"`
+		Slice1  []int             `properties:"slice1"`
+		Slice2  []*A              `properties:"slice2"`
+		Map1    map[string]string `properties:"map1"`
+		Map2    map[string]*A     `properties:"map2"`
+		Pt1     *A                `properties:"pt1"`
+		Struct1 A                 `properties:"st1"`
 	}
 
 	var s = S{
-		S1:      "hello world",
-		I1:      1,
-		I2:      2,
-		I3:      4,
-		I4:      8,
-		I5:      16,
-		UI1:     1,
-		UI2:     2,
-		UI3:     4,
-		UI4:     8,
-		UI5:     16,
-		F1:      3.1415,
-		F2:      2.7187,
-		B1:      true,
-		B2:      false,
-		Slice1:  []int{1, 2, 3, 4},
-		Slice2:  []*A{
+		S1:     "hello world",
+		I1:     1,
+		I2:     2,
+		I3:     4,
+		I4:     8,
+		I5:     16,
+		UI1:    1,
+		UI2:    2,
+		UI3:    4,
+		UI4:    8,
+		UI5:    16,
+		F1:     3.1415,
+		F2:     2.7187,
+		B1:     true,
+		B2:     false,
+		Slice1: []int{1, 2, 3, 4},
+		Slice2: []*A{
 			{"hello", 1},
 			{"world", 2},
 		},
-		Map1:    map[string]string{
+		Map1: map[string]string{
 			"a": "haha",
 		},
-		Map2:    map[string]*A{
+		Map2: map[string]*A{
 			"a": {"hello", 1},
 		},
 		Pt1:     &A{"byebye", 3},
