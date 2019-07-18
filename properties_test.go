@@ -7,13 +7,13 @@ import (
 
 func TestUnmarshalMap__int(t *testing.T) {
 	type S struct {
-		A int `properties:"a"`
-		B int8 `properties:"b"`
-		C int16 `properties:"c"`
-		D int32 `properties:"d"`
-		E int64 `properties:"e"`
-		F uint `properties:"f"`
-		G uint8 `properties:"g"`
+		A int    `properties:"a"`
+		B int8   `properties:"b"`
+		C int16  `properties:"c"`
+		D int32  `properties:"d"`
+		E int64  `properties:"e"`
+		F uint   `properties:"f"`
+		G uint8  `properties:"g"`
 		H uint16 `properties:"h"`
 		I uint32 `properties:"i"`
 		J uint64 `properties:"j"`
@@ -124,8 +124,8 @@ func TestUnmarshalMap__bool(t *testing.T) {
 
 func TestUnmarshalMap__map(t *testing.T) {
 	type S struct {
-		A map[string]string `properties:"a"`
-		B map[string]int `properties:"b"`
+		A map[string]string  `properties:"a"`
+		B map[string]int     `properties:"b"`
 		C map[string]float64 `properties:"c"`
 
 		D map[string]string `properties:"d"`
@@ -164,7 +164,7 @@ func TestUnmarshalMap__map(t *testing.T) {
 func TestUnmarshalMap__slice(t *testing.T) {
 	type S struct {
 		A []string `properties:"a"`
-		B []int `properties:"b"`
+		B []int    `properties:"b"`
 
 		C []bool `properties:"c"`
 	}
@@ -191,11 +191,11 @@ func TestUnmarshalMap__complex_usages(t *testing.T) {
 	t.Run("nested struct", func(t *testing.T) {
 		type AA struct {
 			A string `properties:"a"`
-			B int `properties:"b"`
+			B int    `properties:"b"`
 		}
 
 		type BB struct {
-			A bool `properties:"a"`
+			A bool   `properties:"a"`
 			B string `properties:"b"`
 		}
 
@@ -230,7 +230,7 @@ func TestUnmarshalMap__complex_usages(t *testing.T) {
 	t.Run("array of struct", func(t *testing.T) {
 		type A struct {
 			A string `properties:"a"`
-			B int `properties:"b"`
+			B int    `properties:"b"`
 		}
 
 		type S struct {
@@ -256,4 +256,3 @@ func TestUnmarshalMap__complex_usages(t *testing.T) {
 		assert.Equal(t, expected, s)
 	})
 }
-

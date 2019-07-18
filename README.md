@@ -2,6 +2,7 @@
 
 a module for marshal/unmarshal .properties config file
 
+[![CircleCI](https://circleci.com/gh/ZhengHe-MD/properties.svg?style=svg)](https://circleci.com/gh/ZhengHe-MD/properties)
 [![GoDoc](https://godoc.org/github.com/ZhengHe-MD/properties?status.svg)](https://godoc.org/github.com/ZhengHe-MD/properties)
 ![GitHub release](https://img.shields.io/github/release/ZhengHe-MD/properties.svg)
 

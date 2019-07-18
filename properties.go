@@ -11,7 +11,7 @@ import (
 
 var (
 	InvalidUnmarshalError = errors.New("invalid unmarshal")
-	UnsupportedTypeError = errors.New("unsupported type")
+	UnsupportedTypeError  = errors.New("unsupported type")
 )
 
 func unmarshalKV(kv map[string]string, v interface{}) error {
