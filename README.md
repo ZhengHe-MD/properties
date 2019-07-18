@@ -4,6 +4,7 @@ a module for marshal/unmarshal .properties config file
 
 [![CircleCI](https://circleci.com/gh/ZhengHe-MD/properties.svg?style=svg)](https://circleci.com/gh/ZhengHe-MD/properties)
 [![GoDoc](https://godoc.org/github.com/ZhengHe-MD/properties?status.svg)](https://godoc.org/github.com/ZhengHe-MD/properties)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ZhengHe-MD/properties)](https://goreportcard.com/report/github.com/ZhengHe-MD/properties)
 ![GitHub release](https://img.shields.io/github/release/ZhengHe-MD/properties.svg)
 
 NOTE: this project is not production ready, apis may change if it's necessary
