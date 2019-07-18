@@ -42,19 +42,19 @@ type Address struct {
 }
 
 type Contact struct {
-	Name string `properties:"name"`
+	Name  string `properties:"name"`
 	Phone string `properties:"phone"`
 }
 
 type Person struct {
-	Name string `properties:"name"`
-	Age    int8 `properties:"age"`
-	Email string `properties:"email"`
-	Bio string `properties:"-"`
-	Offline bool `properties:"off"`
+	Name    string `properties:"name"`
+	Age     int8   `properties:"age"`
+	Email   string `properties:"email"`
+	Bio     string `properties:"-"`
+	Offline bool   `properties:"off"`
 
-	EmergencyContact Contact `properties:"emergency_contact"`
-	AddressList []Address `properties:"address_list"`
+	EmergencyContact Contact   `properties:"emergency_contact"`
+	AddressList      []Address `properties:"address_list"`
 }
 
 func main() {
