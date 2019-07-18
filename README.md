@@ -7,6 +7,26 @@ a module for marshal/unmarshal .properties config file
 [![Go Report Card](https://goreportcard.com/badge/github.com/ZhengHe-MD/properties)](https://goreportcard.com/report/github.com/ZhengHe-MD/properties)
 ![GitHub release](https://img.shields.io/github/release/ZhengHe-MD/properties.svg)
 
+## API
+
+1. Marshal
+
+```go
+func Marshal(v interface{}) ([]byte, error)
+```
+
+2. Unmarshal
+
+```go
+func Unmarshal(data []byte, v interface{}) error
+```
+
+3. UnmarshalKV
+
+```go
+func UnmarshalKV(kv map[string]string, v interface{}) error
+```
+
 ## Usages
 
 ```go
@@ -97,26 +117,6 @@ func main() {
     data, _ := properties.Marshal(p3)
     fmt.Println(string(data))
 }
-```
-
-## API
-
-1. UnmarshalKV
-
-```go
-func UnmarshalKV(kv map[string]string, v interface{}) error
-```
-
-2. Marshal
-
-```go
-func Marshal(v interface{}) ([]byte, error)
-```
-
-3. Unmarshal
-
-```go
-func Unmarshal(data []byte, v interface{}) error
 ```
 
 ## Install
