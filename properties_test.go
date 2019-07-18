@@ -171,7 +171,7 @@ func TestUnmarshalMap__slice(t *testing.T) {
 
 	var expected = S{
 		A: []string{"hello", "world"},
-		B: []int{1, 2},
+		B: []int{1, 2, 3, 4, 5, 6, 7, 8},
 		C: []bool{},
 	}
 
@@ -180,6 +180,12 @@ func TestUnmarshalMap__slice(t *testing.T) {
 		"a[1]": "world",
 		"b[0]": "1",
 		"b[1]": "2",
+		"b[2]": "3",
+		"b[3]": "4",
+		"b[4]": "5",
+		"b[5]": "6",
+		"b[6]": "7",
+		"b[7]": "8",
 	}
 
 	var s S

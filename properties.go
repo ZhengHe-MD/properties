@@ -207,7 +207,10 @@ func (p *props) value(key string, v reflect.Value) error {
 		}
 
 		slice := reflect.MakeSlice(t, 0, len(spp))
-		for _, pp := range spp {
+		for ii := 0; ii < len(spp); ii++ {
+			sk := fmt.Sprintf("%s[%d]", key, ii)
+			pp := spp[sk]
+
 			var ev reflect.Value
 			if t.Elem().Kind() == reflect.Ptr {
 				ev = reflect.New(t.Elem().Elem())
@@ -224,7 +227,10 @@ func (p *props) value(key string, v reflect.Value) error {
 			}
 		}
 
-		for sk, epp := range sepp {
+		for ii := 0; ii < len(sepp); ii++ {
+			sk := fmt.Sprintf("%s[%d]", key, ii)
+			epp := sepp[sk]
+
 			ev := reflect.New(t.Elem())
 			err := epp.value(sk, ev)
 			if err != nil {
