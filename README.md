@@ -2,7 +2,7 @@
 
 a module for marshal/unmarshal .properties config file
 
-[![GoDoc](https://godoc.org/github.com/ZhengHe-MD/properties?status.svg)](https://godoc.org/github.com/ZhengHe-MD/properties
+[![GoDoc](https://godoc.org/github.com/ZhengHe-MD/properties?status.svg)](https://godoc.org/github.com/ZhengHe-MD/properties)
 ![GitHub release](https://img.shields.io/github/release/ZhengHe-MD/properties.svg)
 
 NOTE: this project is not production ready, apis may change if it's necessary
