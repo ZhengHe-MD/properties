@@ -227,6 +227,45 @@ func TestUnmarshalMap__complex_usages(t *testing.T) {
 		assert.Equal(t, expected, s)
 	})
 
+	t.Run("nested struct pointer", func(t *testing.T) {
+		type AA struct {
+			A string `properties:"a"`
+			B int    `properties:"b"`
+		}
+
+		type BB struct {
+			A bool   `properties:"a"`
+			B string `properties:"b"`
+		}
+
+		type S struct {
+			A *AA `properties:"a"`
+			B *BB `properties:"b"`
+		}
+
+		var expected = S{
+			A: &AA{
+				A: "hello",
+				B: 3,
+			},
+			B: &BB{
+				A: true,
+				B: "world",
+			},
+		}
+
+		var input = map[string]string{
+			"a.a": "hello",
+			"a.b": "3",
+			"b.a": "true",
+			"b.b": "world",
+		}
+
+		var s S
+		assert.NoError(t, unmarshalKV(input, &s))
+		assert.Equal(t, expected, s)
+	})
+
 	t.Run("array of struct", func(t *testing.T) {
 		type A struct {
 			A string `properties:"a"`
@@ -239,6 +278,35 @@ func TestUnmarshalMap__complex_usages(t *testing.T) {
 
 		var expected = S{
 			AS: []A{
+				{"hello", 1},
+				{"world", 2},
+			},
+		}
+
+		var input = map[string]string{
+			"as[0].a": "hello",
+			"as[0].b": "1",
+			"as[1].a": "world",
+			"as[1].b": "2",
+		}
+
+		var s S
+		assert.NoError(t, unmarshalKV(input, &s))
+		assert.Equal(t, expected, s)
+	})
+
+	t.Run("array of struct pointers", func(t *testing.T) {
+		type A struct {
+			A string `properties:"a"`
+			B int    `properties:"b"`
+		}
+
+		type S struct {
+			AS []*A `properties:"as"`
+		}
+
+		var expected = S{
+			AS: []*A{
 				{"hello", 1},
 				{"world", 2},
 			},

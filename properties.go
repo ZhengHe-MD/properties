@@ -71,6 +71,10 @@ func (p *props) value(key string, v reflect.Value) error {
 		for i := 0; i < v.NumField(); i++ {
 			fv, ft := v.Field(i), t.Field(i)
 
+			if fv.Kind() == reflect.Ptr {
+				fv.Set(reflect.New(ft.Type.Elem()))
+			}
+
 			if !fv.CanSet() {
 				log.Printf("%v cannot be set", fv)
 				continue
@@ -204,12 +208,20 @@ func (p *props) value(key string, v reflect.Value) error {
 
 		slice := reflect.MakeSlice(t, 0, len(spp))
 		for _, pp := range spp {
-			ev := reflect.New(t.Elem())
-			err := pp.value("", ev)
-			if err != nil {
-				return err
+			var ev reflect.Value
+			if t.Elem().Kind() == reflect.Ptr {
+				ev = reflect.New(t.Elem().Elem())
+				if err := pp.value("", ev); err != nil {
+					return err
+				}
+				slice = reflect.Append(slice, ev)
+			} else {
+				ev = reflect.New(t.Elem())
+				if err := pp.value("", ev); err != nil {
+					return err
+				}
+				slice = reflect.Append(slice, ev.Elem())
 			}
-			slice = reflect.Append(slice, ev.Elem())
 		}
 
 		for sk, epp := range sepp {
