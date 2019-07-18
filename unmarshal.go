@@ -3,17 +3,10 @@ package properties
 import (
 	"bufio"
 	"bytes"
-	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
-)
-
-var (
-	InvalidUnmarshalError = errors.New("v must be a non-nil pointer to some struct")
-	InvalidPropBytes 	  = errors.New("bytes are not from valid .properties config")
-	UnsupportedTypeError  = errors.New("unsupported type")
 )
 
 func unmarshalKV(kv map[string]string, v interface{}) error {

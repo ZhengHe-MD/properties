@@ -1,9 +1,18 @@
 package properties
 
-import "errors"
+import (
+	"errors"
+)
+
+var (
+	InvalidUnmarshalError = errors.New("v must be a non-nil struct pointer")
+	InvalidMarshalError   = errors.New("v must be a struct or a struct pointer")
+	InvalidPropBytes 	  = errors.New("bytes are not from valid .properties config")
+	UnsupportedTypeError  = errors.New("unsupported type")
+)
 
 func Marshal(v interface{}) ([]byte, error) {
-	return nil, errors.New("not implemented")
+	return marshal(v)
 }
 
 func Unmarshal(data []byte, v interface{}) error {

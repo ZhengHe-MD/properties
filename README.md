@@ -7,8 +7,6 @@ a module for marshal/unmarshal .properties config file
 [![Go Report Card](https://goreportcard.com/badge/github.com/ZhengHe-MD/properties)](https://goreportcard.com/report/github.com/ZhengHe-MD/properties)
 ![GitHub release](https://img.shields.io/github/release/ZhengHe-MD/properties.svg)
 
-NOTE: this project is not production ready, apis may change if it's necessary
-
 ## Usages
 
 ```go
@@ -40,25 +38,64 @@ type Person struct {
 }
 
 func main() {
-	props := map[string]string{
-		"name": "zhenghe",
-		"age": "18",
-		"email": "ranchardzheng@gmail.com",
-		"bio": "a boring guy",
-		"offline": "true",
-		"emergency_contact.name": "anonymous",
-		"emergency_contact.phone": "13333333333",
-		"address_list[0].country": "China",
-		"address_list[0].city": "Beijing",
-		"address_list[0].street": "Zhongguancun Street",
-		"address_list[1].country": "China",
-		"address_list[1].city": "Shanghai",
-		"address_list[1].street": "Nanjing Street",
-	}
+	propsKV := map[string]string{
+        "name": "zhenghe",
+        "age": "18",
+        "email": "ranchardzheng@gmail.com",
+        "bio": "a boring guy",
+        "offline": "true",
+        "emergency_contact.name": "anonymous",
+        "emergency_contact.phone": "13333333333",
+        "address_list[0].country": "China",
+        "address_list[0].city": "Beijing",
+        "address_list[0].street": "Zhongguancun Street",
+        "address_list[1].country": "China",
+        "address_list[1].city": "Shanghai",
+        "address_list[1].street": "Nanjing Road",
+    }
 
-	var p Person
-	_ = properties.UnmarshalKV(props, &p)
-	fmt.Println(p)
+    propsStr := `
+    name=zhenghe
+    age=18
+    email=ranchardzheng@gmail.com
+    bio=a boring guy
+    offline=true
+    emergency_contact.name=anonymous
+    emergency_contact.phone=13333333333
+    address_list[0].country=China
+    address_list[0].city=Beijing
+    address_list[0].street=Zhongguancun Street
+    address_list[1].country=China
+    address_list[1].city=Shanghai
+    address_list[1].street=Nanjing Road
+`
+
+    var p1 Person
+    var p2 Person
+    _ = properties.UnmarshalKV(propsKV, &p1)
+    _ = properties.Unmarshal([]byte(propsStr), &p2)
+
+    fmt.Println(p1)
+    fmt.Println(p2)
+
+    var p3 = Person{
+        Name: "zhenghe",
+        Age: 18,
+        Email: "ranchardzheng@gmail.com",
+        Bio: "hahahaha",
+        Offline: true,
+        EmergencyContact: Contact{
+            Name: "anonymous",
+            Phone: "13333333333",
+        },
+        AddressList: []Address{
+            {"China", "Beijing", "Zhongguancun Street"},
+            {"China", "Shanghai", "Nanjing Road"},
+        },
+    }
+
+    data, _ := properties.Marshal(p3)
+    fmt.Println(string(data))
 }
 ```
 
@@ -70,7 +107,7 @@ func main() {
 func UnmarshalKV(kv map[string]string, v interface{}) error
 ```
 
-2. Marshal (TODO)
+2. Marshal
 
 ```go
 func Marshal(v interface{}) ([]byte, error)
