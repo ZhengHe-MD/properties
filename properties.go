@@ -1,6 +1,8 @@
 package properties
 
 import (
+	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
 	"reflect"
@@ -10,6 +12,7 @@ import (
 
 var (
 	InvalidUnmarshalError = errors.New("v must be a non-nil pointer to some struct")
+	InvalidPropBytes 	  = errors.New("bytes are not from valid .properties config")
 	UnsupportedTypeError  = errors.New("unsupported type")
 )
 
@@ -20,6 +23,32 @@ func unmarshalKV(kv map[string]string, v interface{}) error {
 
 type props struct {
 	kv map[string]string
+}
+
+func propsFromBytes(data []byte) (*props, error) {
+	scanner := bufio.NewScanner(bytes.NewBuffer(data))
+
+	var kv = map[string]string{}
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		// skip empty line
+		if len(line) == 0 {
+			continue
+		}
+		// skip comment line
+		if strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		parts := strings.Split(line, "=")
+		if len(parts) != 2 {
+			return nil, InvalidPropBytes
+		}
+		k, v := strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
+		kv[k] = v
+	}
+
+	return &props{kv}, nil
 }
 
 func (p *props) unmarshal(v interface{}) error {

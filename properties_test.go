@@ -330,3 +330,56 @@ func TestUnmarshalMap__complex_usages(t *testing.T) {
 		assert.Equal(t, expected, s)
 	})
 }
+
+func TestPropsFromBytes(t *testing.T) {
+	t.Run("plain", func(t *testing.T) {
+		input := []byte(`
+			a.a=hello
+			a.b=world
+			b[0].a=1
+			b[0].b=2
+			c=3.1415
+			d=2.7187
+		`)
+		expected := map[string]string{
+			"a.a": "hello",
+			"a.b": "world",
+			"b[0].a": "1",
+			"b[0].b": "2",
+			"c": "3.1415",
+			"d": "2.7187",
+		}
+
+		p, err := propsFromBytes(input)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, p.kv)
+	})
+
+	t.Run("with comment and empty lines", func(t *testing.T) {
+		input := []byte(`
+			# comment 1
+			a.a=hello
+			a.b=world
+
+			# comment 2
+			b[0].a=1
+			b[0].b=2
+
+			# comment 3
+			c=3.1415
+			d=2.7187
+		`)
+		expected := map[string]string{
+			"a.a": "hello",
+			"a.b": "world",
+			"b[0].a": "1",
+			"b[0].b": "2",
+			"c": "3.1415",
+			"d": "2.7187",
+		}
+
+		p, err := propsFromBytes(input)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, p.kv)
+	})
+}

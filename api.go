@@ -7,7 +7,11 @@ func Marshal(v interface{}) ([]byte, error) {
 }
 
 func Unmarshal(data []byte, v interface{}) error {
-	return errors.New("not implemented")
+	p, err := propsFromBytes(data)
+	if err != nil {
+		return err
+	}
+	return UnmarshalKV(p.kv, v)
 }
 
 func UnmarshalKV(kv map[string]string, v interface{}) error {

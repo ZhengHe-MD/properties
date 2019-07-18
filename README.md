@@ -76,7 +76,7 @@ func UnmarshalKV(kv map[string]string, v interface{}) error
 func Marshal(v interface{}) ([]byte, error)
 ```
 
-3. Unmarshal (TODO)
+3. Unmarshal
 
 ```go
 func Unmarshal(data []byte, v interface{}) error
