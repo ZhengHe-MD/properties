@@ -2,6 +2,7 @@ package properties
 
 import (
 	"github.com/stretchr/testify/assert"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -13,14 +14,19 @@ func TestMarshal__map(t *testing.T) {
 			"b": "world",
 		}
 
-		expectedData := []byte(strings.Join([]string{
+		expectedData1 := []byte(strings.Join([]string{
 			"a=hello\n",
 			"b=world\n",
 		}, ""))
 
+		expectedData2 := []byte(strings.Join([]string{
+			"b=world\n",
+			"a=hello\n",
+		}, ""))
+
 		data, err := Marshal(m)
 		assert.NoError(t, err)
-		assert.Equal(t, string(expectedData), string(data))
+		assert.True(t, reflect.DeepEqual(expectedData1, data) || reflect.DeepEqual(expectedData2, data))
 	})
 
 	t.Run("marshal map pointer", func(t *testing.T) {
@@ -29,14 +35,19 @@ func TestMarshal__map(t *testing.T) {
 			"b": "world",
 		}
 
-		expectedData := []byte(strings.Join([]string{
+		expectedData1 := []byte(strings.Join([]string{
 			"a=hello\n",
 			"b=world\n",
 		}, ""))
 
+		expectedData2 := []byte(strings.Join([]string{
+			"b=world\n",
+			"a=hello\n",
+		}, ""))
+
 		data, err := Marshal(&m)
 		assert.NoError(t, err)
-		assert.Equal(t, string(expectedData), string(data))
+		assert.True(t, reflect.DeepEqual(expectedData1, data) || reflect.DeepEqual(expectedData2, data))
 	})
 }
 
