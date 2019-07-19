@@ -18,7 +18,7 @@ type props struct {
 	kv map[string]string
 }
 
-func propsFromBytes(data []byte) (*props, error) {
+func propsFromBytes(data []byte, prefix string) (*props, error) {
 	scanner := bufio.NewScanner(bytes.NewBuffer(data))
 
 	var kv = map[string]string{}
@@ -38,6 +38,15 @@ func propsFromBytes(data []byte) (*props, error) {
 			return nil, InvalidPropBytes
 		}
 		k, v := strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
+
+		if prefix != "" {
+			if !strings.HasPrefix(k, prefix) {
+				continue
+			} else {
+				k = strings.TrimPrefix(k, prefix)
+			}
+		}
+
 		kv[k] = v
 	}
 

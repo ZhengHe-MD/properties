@@ -21,7 +21,13 @@ func Marshal(v interface{}) ([]byte, error)
 func Unmarshal(data []byte, v interface{}) error
 ```
 
-3. UnmarshalKV
+3. UnmarshalKey
+
+```go
+func UnmarshalKey(key string, data []byte, v interface{}) error
+```
+
+4. UnmarshalKV
 
 ```go
 func UnmarshalKV(kv map[string]string, v interface{}) error
@@ -92,11 +98,14 @@ func main() {
 
     var p1 Person
     var p2 Person
+    var e1 Contact
     _ = properties.UnmarshalKV(propsKV, &p1)
     _ = properties.Unmarshal([]byte(propsStr), &p2)
+    _ = properties.UnmarshalKey("emergency_contact", []byte(propsStr), &e1)
 
     fmt.Println(p1)
     fmt.Println(p2)
+    fmt.Println(e1)
 
     var p3 = Person{
         Name: "zhenghe",

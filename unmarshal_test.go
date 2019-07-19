@@ -350,7 +350,7 @@ func TestPropsFromBytes(t *testing.T) {
 			"d":      "2.7187",
 		}
 
-		p, err := propsFromBytes(input)
+		p, err := propsFromBytes(input, "")
 		assert.NoError(t, err)
 		assert.Equal(t, expected, p.kv)
 	})
@@ -378,8 +378,48 @@ func TestPropsFromBytes(t *testing.T) {
 			"d":      "2.7187",
 		}
 
-		p, err := propsFromBytes(input)
+		p, err := propsFromBytes(input, "")
 		assert.NoError(t, err)
 		assert.Equal(t, expected, p.kv)
 	})
+
+	t.Run("with prefix", func(t *testing.T) {
+		input := []byte(`
+			a.a=hello
+			a.b=world
+		`)
+
+		expected := map[string]string{
+			"a": "hello",
+			"b": "world",
+		}
+
+		p, err := propsFromBytes(input, "a.")
+		assert.NoError(t, err)
+		assert.Equal(t, expected, p.kv)
+	})
+}
+
+func TestUnmarshalKey(t *testing.T) {
+	type A struct {
+		A string `properties:"a"`
+		B int    `properties:"b"`
+	}
+
+	input := []byte(`
+		a.a=hello
+		a.b=1
+		a=bye
+		b=2
+	`)
+
+	var expected = A{
+		A: "hello",
+		B: 1,
+	}
+
+	var a A
+	err := UnmarshalKey("a", input, &a)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, a)
 }

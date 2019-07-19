@@ -16,7 +16,7 @@ func Marshal(v interface{}) ([]byte, error) {
 }
 
 func Unmarshal(data []byte, v interface{}) error {
-	p, err := propsFromBytes(data)
+	p, err := propsFromBytes(data, "")
 	if err != nil {
 		return err
 	}
@@ -25,4 +25,12 @@ func Unmarshal(data []byte, v interface{}) error {
 
 func UnmarshalKV(kv map[string]string, v interface{}) error {
 	return unmarshalKV(kv, v)
+}
+
+func UnmarshalKey(key string, data []byte, v interface{}) error {
+	p, err := propsFromBytes(data, key+".")
+	if err != nil {
+		return err
+	}
+	return UnmarshalKV(p.kv, v)
 }
