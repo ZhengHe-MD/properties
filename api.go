@@ -6,7 +6,7 @@ import (
 
 var (
 	InvalidUnmarshalError = errors.New("v must be a non-nil struct pointer")
-	InvalidMarshalError   = errors.New("v must be a struct or a struct pointer")
+	InvalidMarshalError   = errors.New("v must be of type map, map pointer, struct or struct pointer")
 	InvalidPropBytes      = errors.New("bytes are not from valid .properties config")
 	UnsupportedTypeError  = errors.New("unsupported type")
 )
@@ -34,3 +34,4 @@ func UnmarshalKey(key string, data []byte, v interface{}) error {
 	}
 	return UnmarshalKV(p.kv, v)
 }
+

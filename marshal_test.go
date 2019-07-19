@@ -6,6 +6,40 @@ import (
 	"testing"
 )
 
+func TestMarshal__map(t *testing.T) {
+	t.Run("marshal map", func(t *testing.T) {
+		var m = map[string]string{
+			"a": "hello",
+			"b": "world",
+		}
+
+		expectedData := []byte(strings.Join([]string{
+			"a=hello\n",
+			"b=world\n",
+		}, ""))
+
+		data, err := Marshal(m)
+		assert.NoError(t, err)
+		assert.Equal(t, string(expectedData), string(data))
+	})
+
+	t.Run("marshal map pointer", func(t *testing.T) {
+		var m = map[string]string{
+			"a": "hello",
+			"b": "world",
+		}
+
+		expectedData := []byte(strings.Join([]string{
+			"a=hello\n",
+			"b=world\n",
+		}, ""))
+
+		data, err := Marshal(&m)
+		assert.NoError(t, err)
+		assert.Equal(t, string(expectedData), string(data))
+	})
+}
+
 func TestMarshal__complex_usages(t *testing.T) {
 	type A struct {
 		SA1 string `properties:"sa1"`

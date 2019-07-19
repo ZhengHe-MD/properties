@@ -12,11 +12,12 @@ func toPropLineBytes(key, val string) []byte {
 func marshal(v interface{}) ([]byte, error) {
 	rv := reflect.ValueOf(v)
 
-	if rv.Kind() != reflect.Struct && (rv.Kind() != reflect.Ptr || rv.Elem().Kind() != reflect.Struct) {
-		return nil, InvalidMarshalError
+	if rv.Kind() == reflect.Map || rv.Kind() == reflect.Struct ||
+		rv.Kind() == reflect.Ptr && (rv.Elem().Kind() == reflect.Struct || rv.Elem().Kind() == reflect.Map) {
+		return devalue("", rv)
 	}
 
-	return devalue("", rv)
+	return nil, InvalidMarshalError
 }
 
 func devalue(key string, v reflect.Value) ([]byte, error) {
@@ -47,7 +48,15 @@ func devalue(key string, v reflect.Value) ([]byte, error) {
 	case reflect.Map:
 		for _, kk := range v.MapKeys() {
 			vv := v.MapIndex(kk)
-			d, err := devalue(fmt.Sprintf("%s.%v", key, kk.Interface()), vv)
+
+			var nkey string
+			if key != "" {
+				nkey = fmt.Sprintf("%s.%s", key, kk.Interface())
+			} else {
+				nkey = fmt.Sprint(kk.Interface())
+			}
+
+			d, err := devalue(nkey, vv)
 			if err != nil {
 				return nil, err
 			}
