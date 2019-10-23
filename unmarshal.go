@@ -34,10 +34,11 @@ func propsFromBytes(data []byte, prefix string) (*props, error) {
 		}
 
 		parts := strings.Split(line, "=")
-		if len(parts) != 2 {
+		if len(parts) < 2 {
 			return nil, InvalidPropBytes
 		}
-		k, v := strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
+		// NOTE: allow value to contain "="
+		k, v := strings.TrimSpace(parts[0]), strings.TrimSpace(strings.Join(parts[1:], "="))
 
 		if prefix != "" {
 			if !strings.HasPrefix(k, prefix) {

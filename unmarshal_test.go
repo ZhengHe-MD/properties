@@ -340,6 +340,7 @@ func TestPropsFromBytes(t *testing.T) {
 			b[0].b=2
 			c=3.1415
 			d=2.7187
+			e={"a": 3, "b": "ha=ha=haha"}
 		`)
 		expected := map[string]string{
 			"a.a":    "hello",
@@ -348,6 +349,7 @@ func TestPropsFromBytes(t *testing.T) {
 			"b[0].b": "2",
 			"c":      "3.1415",
 			"d":      "2.7187",
+			"e":      "{\"a\": 3, \"b\": \"ha=ha=haha\"}",
 		}
 
 		p, err := propsFromBytes(input, "")
