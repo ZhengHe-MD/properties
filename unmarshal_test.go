@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestUnmarshalMap__int(t *testing.T) {
+func TestUnmarshalKV__int(t *testing.T) {
 	type S struct {
 		A int    `properties:"a"`
 		B int8   `properties:"b"`
@@ -21,7 +21,7 @@ func TestUnmarshalMap__int(t *testing.T) {
 		K int `properties:"k"`
 	}
 
-	var expected = S{
+	var want = S{
 		A: -1,
 		B: 2,
 		C: 512,
@@ -48,18 +48,18 @@ func TestUnmarshalMap__int(t *testing.T) {
 		"j": "16",
 	}
 
-	var s S
-	assert.NoError(t, unmarshalKV(input, &s))
-	assert.Equal(t, expected, s)
+	var given S
+	assert.NoError(t, unmarshalKV(input, &given))
+	assert.Equal(t, want, given)
 }
 
-func TestUnmarshalMap__string(t *testing.T) {
+func TestUnmarshalKV__string(t *testing.T) {
 	type S struct {
 		A string `properties:"a"`
 		B string `properties:"b"`
 	}
 
-	var expected = S{
+	var want = S{
 		A: "hello",
 		B: "",
 	}
@@ -68,12 +68,12 @@ func TestUnmarshalMap__string(t *testing.T) {
 		"a": "hello",
 	}
 
-	var s S
-	assert.NoError(t, unmarshalKV(input, &s))
-	assert.Equal(t, expected, s)
+	var given S
+	assert.NoError(t, unmarshalKV(input, &given))
+	assert.Equal(t, want, given)
 }
 
-func TestUnmarshalMap__float(t *testing.T) {
+func TestUnmarshalKV__float(t *testing.T) {
 	type S struct {
 		A float32 `properties:"a"`
 		B float64 `properties:"b"`
@@ -82,7 +82,7 @@ func TestUnmarshalMap__float(t *testing.T) {
 		D float32 `properties:"d"`
 	}
 
-	var expected = S{
+	var want = S{
 		A: 3.1415,
 		B: 2.7187,
 		C: 0,
@@ -96,18 +96,18 @@ func TestUnmarshalMap__float(t *testing.T) {
 		"d": "0",
 	}
 
-	var s S
-	assert.NoError(t, unmarshalKV(input, &s))
-	assert.Equal(t, expected, s)
+	var given S
+	assert.NoError(t, unmarshalKV(input, &given))
+	assert.Equal(t, want, given)
 }
 
-func TestUnmarshalMap__bool(t *testing.T) {
+func TestUnmarshalKV__bool(t *testing.T) {
 	type S struct {
 		A bool `properties:"a"`
 		B bool `properties:"b"`
 	}
 
-	var expected = S{
+	var want = S{
 		A: true,
 		B: false,
 	}
@@ -117,21 +117,20 @@ func TestUnmarshalMap__bool(t *testing.T) {
 		"b": "0",
 	}
 
-	var s S
-	assert.NoError(t, unmarshalKV(input, &s))
-	assert.Equal(t, expected, s)
+	var given S
+	assert.NoError(t, unmarshalKV(input, &given))
+	assert.Equal(t, want, given)
 }
 
-func TestUnmarshalMap__map(t *testing.T) {
+func TestUnmarshalKV__map(t *testing.T) {
 	type S struct {
 		A map[string]string  `properties:"a"`
 		B map[string]int     `properties:"b"`
 		C map[string]float64 `properties:"c"`
-
-		D map[string]string `properties:"d"`
+		D map[string]string  `properties:"d"`
 	}
 
-	var expected = S{
+	var want = S{
 		A: map[string]string{
 			"a": "hello",
 			"b": "world",
@@ -156,12 +155,12 @@ func TestUnmarshalMap__map(t *testing.T) {
 		"c.b": "2.7187",
 	}
 
-	var s S
-	assert.NoError(t, unmarshalKV(input, &s))
-	assert.Equal(t, expected, s)
+	var given S
+	assert.NoError(t, unmarshalKV(input, &given))
+	assert.Equal(t, want, given)
 }
 
-func TestUnmarshalMap__slice(t *testing.T) {
+func TestUnmarshalKV__slice(t *testing.T) {
 	type S struct {
 		A []string `properties:"a"`
 		B []int    `properties:"b"`
@@ -169,7 +168,7 @@ func TestUnmarshalMap__slice(t *testing.T) {
 		C []bool `properties:"c"`
 	}
 
-	var expected = S{
+	var want = S{
 		A: []string{"hello", "world"},
 		B: []int{1, 2, 3, 4, 5, 6, 7, 8},
 		C: []bool{},
@@ -188,147 +187,197 @@ func TestUnmarshalMap__slice(t *testing.T) {
 		"b[7]": "8",
 	}
 
-	var s S
-	assert.NoError(t, unmarshalKV(input, &s))
-	assert.Equal(t, expected, s)
+	var given S
+	assert.NoError(t, unmarshalKV(input, &given))
+	assert.Equal(t, want, given)
 }
 
-func TestUnmarshalMap__complex_usages(t *testing.T) {
-	t.Run("nested struct", func(t *testing.T) {
-		type AA struct {
-			A string `properties:"a"`
-			B int    `properties:"b"`
-		}
+func TestUnmarshalKV__nested_struct(t *testing.T) {
+	type AA struct {
+		A string `properties:"a"`
+		B int    `properties:"b"`
+	}
 
-		type BB struct {
-			A bool   `properties:"a"`
-			B string `properties:"b"`
-		}
+	type BB struct {
+		A bool   `properties:"a"`
+		B string `properties:"b"`
+	}
 
-		type S struct {
-			A AA `properties:"a"`
-			B BB `properties:"b"`
-		}
+	type S struct {
+		A AA `properties:"a"`
+		B BB `properties:"b"`
+	}
 
-		var expected = S{
-			A: AA{
-				A: "hello",
-				B: 3,
-			},
-			B: BB{
-				A: true,
-				B: "world",
-			},
-		}
+	var want = S{
+		A: AA{
+			A: "hello",
+			B: 3,
+		},
+		B: BB{
+			A: true,
+			B: "world",
+		},
+	}
 
-		var input = map[string]string{
-			"a.a": "hello",
-			"a.b": "3",
-			"b.a": "true",
-			"b.b": "world",
-		}
+	var input = map[string]string{
+		"a.a": "hello",
+		"a.b": "3",
+		"b.a": "true",
+		"b.b": "world",
+	}
 
-		var s S
-		assert.NoError(t, unmarshalKV(input, &s))
-		assert.Equal(t, expected, s)
-	})
+	var given S
+	assert.NoError(t, unmarshalKV(input, &given))
+	assert.Equal(t, want, given)
+}
 
-	t.Run("nested struct pointer", func(t *testing.T) {
-		type AA struct {
-			A string `properties:"a"`
-			B int    `properties:"b"`
-		}
+func TestUnmarshalKV__nested_struct_pointer(t *testing.T) {
+	type AA struct {
+		A string `properties:"a"`
+		B int    `properties:"b"`
+	}
 
-		type BB struct {
-			A bool   `properties:"a"`
-			B string `properties:"b"`
-		}
+	type BB struct {
+		A bool   `properties:"a"`
+		B string `properties:"b"`
+	}
 
-		type S struct {
-			A *AA `properties:"a"`
-			B *BB `properties:"b"`
-		}
+	type S struct {
+		A *AA `properties:"a"`
+		B *BB `properties:"b"`
+	}
 
-		var expected = S{
-			A: &AA{
-				A: "hello",
-				B: 3,
-			},
-			B: &BB{
-				A: true,
-				B: "world",
-			},
-		}
+	var want = S{
+		A: &AA{
+			A: "hello",
+			B: 3,
+		},
+		B: &BB{
+			A: true,
+			B: "world",
+		},
+	}
 
-		var input = map[string]string{
-			"a.a": "hello",
-			"a.b": "3",
-			"b.a": "true",
-			"b.b": "world",
-		}
+	var input = map[string]string{
+		"a.a": "hello",
+		"a.b": "3",
+		"b.a": "true",
+		"b.b": "world",
+	}
 
-		var s S
-		assert.NoError(t, unmarshalKV(input, &s))
-		assert.Equal(t, expected, s)
-	})
+	var given S
+	assert.NoError(t, unmarshalKV(input, &given))
+	assert.Equal(t, want, given)
+}
 
-	t.Run("array of struct", func(t *testing.T) {
-		type A struct {
-			A string `properties:"a"`
-			B int    `properties:"b"`
-		}
+func TestUnmarshalKV__array_of_struct(t *testing.T) {
+	type A struct {
+		A string `properties:"a"`
+		B int    `properties:"b"`
+	}
 
-		type S struct {
-			AS []A `properties:"as"`
-		}
+	type S struct {
+		AS []A `properties:"as"`
+	}
 
-		var expected = S{
-			AS: []A{
-				{"hello", 1},
-				{"world", 2},
-			},
-		}
+	var want = S{
+		AS: []A{
+			{"hello", 1},
+			{"world", 2},
+		},
+	}
 
-		var input = map[string]string{
-			"as[0].a": "hello",
-			"as[0].b": "1",
-			"as[1].a": "world",
-			"as[1].b": "2",
-		}
+	var input = map[string]string{
+		"as[0].a": "hello",
+		"as[0].b": "1",
+		"as[1].a": "world",
+		"as[1].b": "2",
+	}
 
-		var s S
-		assert.NoError(t, unmarshalKV(input, &s))
-		assert.Equal(t, expected, s)
-	})
+	var given S
+	assert.NoError(t, unmarshalKV(input, &given))
+	assert.Equal(t, want, given)
+}
 
-	t.Run("array of struct pointers", func(t *testing.T) {
-		type A struct {
-			A string `properties:"a"`
-			B int    `properties:"b"`
-		}
+func TestUnmarshalKV__array_of_struct_pointers(t *testing.T) {
+	type A struct {
+		A string `properties:"a"`
+		B int    `properties:"b"`
+	}
 
-		type S struct {
-			AS []*A `properties:"as"`
-		}
+	type S struct {
+		AS []*A `properties:"as"`
+	}
 
-		var expected = S{
-			AS: []*A{
-				{"hello", 1},
-				{"world", 2},
-			},
-		}
+	var want = S{
+		AS: []*A{
+			{"hello", 1},
+			{"world", 2},
+		},
+	}
 
-		var input = map[string]string{
-			"as[0].a": "hello",
-			"as[0].b": "1",
-			"as[1].a": "world",
-			"as[1].b": "2",
-		}
+	var input = map[string]string{
+		"as[0].a": "hello",
+		"as[0].b": "1",
+		"as[1].a": "world",
+		"as[1].b": "2",
+	}
 
-		var s S
-		assert.NoError(t, unmarshalKV(input, &s))
-		assert.Equal(t, expected, s)
-	})
+	var given S
+	assert.NoError(t, unmarshalKV(input, &given))
+	assert.Equal(t, want, given)
+}
+
+func TestUnmarshalKV__string_to_struct_map(t *testing.T) {
+	type A struct {
+		PA string `properties:"pa"`
+	}
+
+	type B struct {
+		M map[string]A `properties:"m"`
+	}
+
+	var expectedB = B{
+		M: map[string]A{
+			"k1": {PA: "pa1"},
+			"k2": {PA: "pa2"},
+		},
+	}
+
+	var input = map[string]string{
+		"m.k1.pa": "pa1",
+		"m.k2.pa": "pa2",
+	}
+
+	var c B
+	assert.NoError(t, unmarshalKV(input, &c))
+	assert.Equal(t, expectedB, c)
+}
+
+func TestUnmarshalKV__string_to_struct_pointer_map(t *testing.T) {
+	type A struct {
+		PA string `properties:"pa"`
+	}
+
+	type B struct {
+		M map[string]*A `properties:"m"`
+	}
+
+	var expectedB = B{
+		M: map[string]*A{
+			"k1": {PA: "pa1"},
+			"k2": {PA: "pa2"},
+		},
+	}
+
+	var input = map[string]string{
+		"m.k1.pa": "pa1",
+		"m.k2.pa": "pa2",
+	}
+
+	var b B
+	assert.NoError(t, unmarshalKV(input, &b))
+	assert.Equal(t, expectedB, b)
 }
 
 func TestPropsFromBytes(t *testing.T) {
@@ -342,7 +391,7 @@ func TestPropsFromBytes(t *testing.T) {
 			d=2.7187
 			e={"a": 3, "b": "ha=ha=haha"}
 		`)
-		expected := map[string]string{
+		want := map[string]string{
 			"a.a":    "hello",
 			"a.b":    "world",
 			"b[0].a": "1",
@@ -354,7 +403,7 @@ func TestPropsFromBytes(t *testing.T) {
 
 		p, err := propsFromBytes(input, "")
 		assert.NoError(t, err)
-		assert.Equal(t, expected, p.kv)
+		assert.Equal(t, want, p.kv)
 	})
 
 	t.Run("with comment and empty lines", func(t *testing.T) {
@@ -371,7 +420,7 @@ func TestPropsFromBytes(t *testing.T) {
 			c=3.1415
 			d=2.7187
 		`)
-		expected := map[string]string{
+		want := map[string]string{
 			"a.a":    "hello",
 			"a.b":    "world",
 			"b[0].a": "1",
@@ -382,7 +431,7 @@ func TestPropsFromBytes(t *testing.T) {
 
 		p, err := propsFromBytes(input, "")
 		assert.NoError(t, err)
-		assert.Equal(t, expected, p.kv)
+		assert.Equal(t, want, p.kv)
 	})
 
 	t.Run("with prefix", func(t *testing.T) {
@@ -391,14 +440,14 @@ func TestPropsFromBytes(t *testing.T) {
 			a.b=world
 		`)
 
-		expected := map[string]string{
+		want := map[string]string{
 			"a": "hello",
 			"b": "world",
 		}
 
 		p, err := propsFromBytes(input, "a.")
 		assert.NoError(t, err)
-		assert.Equal(t, expected, p.kv)
+		assert.Equal(t, want, p.kv)
 	})
 }
 
@@ -415,13 +464,13 @@ func TestUnmarshalKey(t *testing.T) {
 		b=2
 	`)
 
-	var expected = A{
+	var want = A{
 		A: "hello",
 		B: 1,
 	}
 
-	var a A
-	err := UnmarshalKey("a", input, &a)
+	var given A
+	err := UnmarshalKey("a", input, &given)
 	assert.NoError(t, err)
-	assert.Equal(t, expected, a)
+	assert.Equal(t, want, given)
 }

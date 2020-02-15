@@ -172,11 +172,24 @@ func (p *props) valueMap(key string, v reflect.Value) (err error) {
 	pp := p.subprops(key)
 	for kk := range pp.kv {
 		mv := reflect.New(v.Type().Elem())
+
+		vv := mv
+		// allocate a new value for the pointer
+		valueIsPtr := mv.Elem().Type().Kind() == reflect.Ptr
+		if valueIsPtr {
+			vv = reflect.New(v.Type().Elem().Elem())
+		}
+
 		mk := strings.Split(kk, ".")[0]
-		err = pp.value(mk, mv)
+		err = pp.value(mk, vv)
 		if err != nil {
 			return
 		}
+
+		if valueIsPtr {
+			mv.Elem().Set(vv)
+		}
+
 		m.SetMapIndex(reflect.ValueOf(mk), mv.Elem())
 	}
 	v.Set(m)
