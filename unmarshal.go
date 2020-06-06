@@ -85,6 +85,10 @@ func (p *props) valueStruct(key string, v reflect.Value) error {
 	for i := 0; i < v.NumField(); i++ {
 		vf, tf := v.Field(i), v.Type().Field(i)
 
+		if !vf.CanInterface() {
+			continue
+		}
+
 		if vf.Kind() == reflect.Ptr {
 			vf.Set(reflect.New(tf.Type.Elem()))
 		}

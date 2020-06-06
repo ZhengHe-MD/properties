@@ -2,6 +2,7 @@ package properties
 
 import (
 	"github.com/stretchr/testify/assert"
+	"log"
 	"reflect"
 	"strings"
 	"testing"
@@ -48,6 +49,19 @@ func TestMarshal__map(t *testing.T) {
 		data, err := Marshal(&m)
 		assert.NoError(t, err)
 		assert.True(t, reflect.DeepEqual(expectedData1, data) || reflect.DeepEqual(expectedData2, data))
+	})
+
+	t.Run("marshal map complex usage", func(t *testing.T) {
+		var m = map[string]string{
+			"dailystudy.leveltext[0].level": "100000",
+			"dailystudy.leveltext[0].ls":    "BR-100L",
+			"dailystudy.leveltext[0].title": "完成Level A的学习，孩子可以",
+			"dailystudy.leveltext[0].text":  "\"1. 认识26个字母及字母相关单词78个\n2. 阅读关于身体,动物等9个话题绘本70本\n3. 学习口语词汇500+、常用口语表达句式12个\"",
+		}
+
+		data, err := Marshal(&m)
+		log.Println(string(data))
+		assert.NoError(t, err, string(data))
 	})
 }
 

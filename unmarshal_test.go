@@ -474,3 +474,23 @@ func TestUnmarshalKey(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, want, given)
 }
+
+func TestUnmarshalKV__unexported_field_in_struct(t *testing.T) {
+	type R struct{}
+
+	type S struct {
+		A string `properties:"a"`
+		b *R
+	}
+
+	var want = S{
+		A: "hello",
+	}
+
+	var input = map[string]string{
+		"a": "hello",
+	}
+	var given S
+	assert.NoError(t, unmarshalKV(input, &given))
+	assert.Equal(t, want, given)
+}
