@@ -1,11 +1,13 @@
 package properties
 
 import (
-	"github.com/stretchr/testify/assert"
 	"log"
 	"reflect"
 	"strings"
 	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMarshal__map(t *testing.T) {
@@ -93,6 +95,7 @@ func TestMarshal__complex_usages(t *testing.T) {
 		Map2    map[string]*A     `properties:"map2"`
 		Pt1     *A                `properties:"pt1"`
 		Struct1 A                 `properties:"st1"`
+		Time    time.Time         `properties:"time"`
 	}
 
 	var s = S{
@@ -124,6 +127,7 @@ func TestMarshal__complex_usages(t *testing.T) {
 		},
 		Pt1:     &A{"byebye", 3},
 		Struct1: A{"morning", 4},
+		Time:    time.Date(2021, 8, 30, 11, 11, 11, 11, time.UTC),
 	}
 
 	expectedLines := []string{
@@ -157,10 +161,13 @@ func TestMarshal__complex_usages(t *testing.T) {
 		"pt1.ia1=3\n",
 		"st1.sa1=morning\n",
 		"st1.ia1=4\n",
+		"time=2021-08-30T11:11:11.000000011Z",
 	}
 
 	expectedData := []byte(strings.Join(expectedLines, ""))
 	data, err := Marshal(s)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedData, data)
+
+	println(string(data))
 }

@@ -3,6 +3,7 @@ package properties
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 func TestUnmarshalKV__int(t *testing.T) {
@@ -66,6 +67,24 @@ func TestUnmarshalKV__string(t *testing.T) {
 
 	var input = map[string]string{
 		"a": "hello",
+	}
+
+	var given S
+	assert.NoError(t, unmarshalKV(input, &given))
+	assert.Equal(t, want, given)
+}
+
+func TestUnmarshalKV__time(t *testing.T) {
+	type S struct {
+		T time.Time `properties:"time"`
+	}
+
+	var want = S{
+		T: time.Date(2021, 8, 30, 11, 11, 11, 11, time.UTC),
+	}
+
+	var input = map[string]string{
+		"time": "2021-08-30T11:11:11.000000011Z",
 	}
 
 	var given S

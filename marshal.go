@@ -1,8 +1,14 @@
 package properties
 
 import (
+	"encoding"
 	"fmt"
 	"reflect"
+)
+
+var (
+	typTextMarshaler   = reflect.TypeOf((*encoding.TextMarshaler)(nil)).Elem()
+	typTextUnmarshaler = reflect.TypeOf((*encoding.TextUnmarshaler)(nil)).Elem()
 )
 
 func toPropLineBytes(key, val string) []byte {
@@ -26,6 +32,13 @@ func devalue(key string, v reflect.Value) ([]byte, error) {
 	case reflect.Ptr:
 		return devalue(key, v.Elem())
 	case reflect.Struct:
+		if v.Type().Implements(typTextMarshaler) {
+			text, err := v.Interface().(encoding.TextMarshaler).MarshalText()
+			if err != nil {
+				return nil, err
+			}
+			return toPropLineBytes(key, string(text)), nil
+		}
 		for i := 0; i < v.NumField(); i++ {
 			vf, tf := v.Field(i), v.Type().Field(i)
 

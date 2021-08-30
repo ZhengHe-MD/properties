@@ -3,6 +3,7 @@ package properties
 import (
 	"bufio"
 	"bytes"
+	"encoding"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -82,6 +83,14 @@ func (p *props) value(key string, v reflect.Value) (err error) {
 }
 
 func (p *props) valueStruct(key string, v reflect.Value) error {
+	if v.Addr().Type().Implements(typTextUnmarshaler) {
+		value, ok := p.get(key)
+		if !ok {
+			return nil
+		}
+		return v.Addr().Interface().(encoding.TextUnmarshaler).UnmarshalText([]byte(value))
+	}
+
 	for i := 0; i < v.NumField(); i++ {
 		vf, tf := v.Field(i), v.Type().Field(i)
 
