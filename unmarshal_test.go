@@ -55,18 +55,23 @@ func TestUnmarshalKV__int(t *testing.T) {
 }
 
 func TestUnmarshalKV__string(t *testing.T) {
+	type Alias string
+
 	type S struct {
-		A string `properties:"a"`
-		B string `properties:"b"`
+		A     string `properties:"a"`
+		B     string `properties:"b"`
+		Alias Alias  `properties:"alias"`
 	}
 
 	var want = S{
-		A: "hello",
-		B: "",
+		A:     "hello",
+		B:     "",
+		Alias: Alias("alias"),
 	}
 
 	var input = map[string]string{
-		"a": "hello",
+		"a":     "hello",
+		"alias": "alias",
 	}
 
 	var given S

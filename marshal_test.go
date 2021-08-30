@@ -161,13 +161,11 @@ func TestMarshal__complex_usages(t *testing.T) {
 		"pt1.ia1=3\n",
 		"st1.sa1=morning\n",
 		"st1.ia1=4\n",
-		"time=2021-08-30T11:11:11.000000011Z",
+		"time=2021-08-30T11:11:11.000000011Z\n",
 	}
 
 	expectedData := []byte(strings.Join(expectedLines, ""))
 	data, err := Marshal(s)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedData, data)
-
-	println(string(data))
 }

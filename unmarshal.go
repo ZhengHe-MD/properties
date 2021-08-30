@@ -166,13 +166,13 @@ func (p *props) valueBasicType(key string, v reflect.Value) error {
 		}
 		v.Set(reflect.ValueOf(fv).Convert(v.Type()))
 	case reflect.String:
-		v.Set(reflect.ValueOf(s))
+		v.Set(reflect.ValueOf(s).Convert(v.Type()))
 	case reflect.Bool:
 		bv, err := strconv.ParseBool(s)
 		if err != nil {
 			return err
 		}
-		v.Set(reflect.ValueOf(bv))
+		v.Set(reflect.ValueOf(bv).Convert(v.Type()))
 	default:
 		return UnsupportedTypeError
 	}
