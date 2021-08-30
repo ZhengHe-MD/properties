@@ -47,6 +47,9 @@ func devalue(key string, v reflect.Value) ([]byte, error) {
 			if kk == "-" {
 				continue
 			}
+			if kk == "" {
+				kk = tf.Name
+			}
 
 			if key != "" {
 				kk = fmt.Sprintf("%s.%s", key, kk)

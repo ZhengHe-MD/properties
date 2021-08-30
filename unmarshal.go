@@ -109,6 +109,10 @@ func (p *props) valueStruct(key string, v reflect.Value) error {
 			continue
 		}
 
+		if kk == "" {
+			kk = tf.Name
+		}
+
 		if key != "" {
 			kk = fmt.Sprintf("%s.%s", key, kk)
 		}
