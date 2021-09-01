@@ -97,6 +97,9 @@ func (p *props) valueStruct(key string, v reflect.Value) error {
 		if !vf.CanInterface() {
 			continue
 		}
+		if !vf.CanSet() {
+			continue
+		}
 
 		if vf.Kind() == reflect.Ptr {
 			vf.Set(reflect.New(tf.Type.Elem()))
@@ -118,7 +121,7 @@ func (p *props) valueStruct(key string, v reflect.Value) error {
 		}
 
 		if err := p.value(kk, vf); err != nil {
-			return nil
+			return err
 		}
 	}
 	return nil
