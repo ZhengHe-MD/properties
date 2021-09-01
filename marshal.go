@@ -4,6 +4,7 @@ import (
 	"encoding"
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 var (
@@ -12,7 +13,7 @@ var (
 )
 
 func toPropLineBytes(key, val string) []byte {
-	return []byte(fmt.Sprintf("%s=%s\n", key, val))
+	return []byte(fmt.Sprintf("%s=%s\n", key, escape(val)))
 }
 
 func marshal(v interface{}) ([]byte, error) {
@@ -117,4 +118,31 @@ func devalue(key string, v reflect.Value) ([]byte, error) {
 		return toPropLineBytes(key, fmt.Sprint(v.Interface())), nil
 	}
 	return data, nil
+}
+
+func escape(raw string) string {
+
+	sb := strings.Builder{}
+
+	for _, r := range raw {
+		switch r {
+		case '\f':
+			sb.WriteString("\\f")
+		case '\n':
+			sb.WriteString("\\n")
+		case '\r':
+			sb.WriteString("\\r")
+		case '\t':
+			sb.WriteString("\\t")
+		case '\\':
+			sb.WriteString("\\\\")
+		case ':':
+			sb.WriteString("\\:")
+		case '=':
+			sb.WriteString("\\=")
+		default:
+			sb.WriteRune(r)
+		}
+	}
+	return sb.String()
 }

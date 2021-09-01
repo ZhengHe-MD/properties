@@ -34,12 +34,12 @@ func propsFromBytes(data []byte, prefix string) (*props, error) {
 			continue
 		}
 
-		parts := strings.Split(line, "=")
-		if len(parts) < 2 {
+		k, v, ok := split(line)
+		if !ok {
 			return nil, InvalidPropBytes
 		}
 		// NOTE: allow value to contain "="
-		k, v := strings.TrimSpace(parts[0]), strings.TrimSpace(strings.Join(parts[1:], "="))
+		k, v = strings.TrimSpace(k), strings.TrimSpace(v)
 
 		if prefix != "" {
 			if !strings.HasPrefix(k, prefix) {
@@ -316,4 +316,60 @@ func (p *props) hasKeyPrefix(prefix string) bool {
 		}
 	}
 	return false
+}
+
+func split(line string) (k, v string, ok bool) {
+
+	var keyIndex int = -1
+	var pre rune
+	for i, r := range line {
+		if (r == '=' || r == ':') && pre != '\\' {
+			keyIndex = i
+			break
+		}
+		pre = r
+	}
+
+	if keyIndex < 0 {
+		return "", "", false
+	}
+	k = line[:keyIndex]
+	v = unescape(line[keyIndex+1:])
+
+	return k, v, true
+}
+
+func unescape(raw string) string {
+
+	sb := strings.Builder{}
+
+	var pre rune
+	for _, r := range raw {
+		if pre == '\\' {
+			switch r {
+			case 'f':
+				sb.WriteRune('\f')
+			case 'n':
+				sb.WriteRune('\n')
+			case '\r':
+				sb.WriteRune('\r')
+			case '\t':
+				sb.WriteRune('\t')
+			case '\\':
+				sb.WriteRune('\\')
+			case ':':
+				sb.WriteRune(':')
+			case '=':
+				sb.WriteRune('=')
+			default:
+				sb.WriteRune(r)
+			}
+		} else {
+			if r != '\\' {
+				sb.WriteRune(r)
+			}
+		}
+		pre = r
+	}
+	return sb.String()
 }
