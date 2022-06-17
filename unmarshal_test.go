@@ -53,6 +53,24 @@ func TestUnmarshalKV__int(t *testing.T) {
 	assert.Equal(t, want, given)
 }
 
+func TestUnmarshalKV__empty_input(t *testing.T) {
+	type S struct {
+		A string `properties:"a"`
+		B string `properties:"b"`
+	}
+
+	var want = S{
+		A: "",
+		B: "",
+	}
+
+	var input = map[string]string{}
+
+	var given S
+	assert.NoError(t, unmarshalKV(input, &given))
+	assert.Equal(t, want, given)
+}
+
 func TestUnmarshalKV__string(t *testing.T) {
 	type S struct {
 		A string `properties:"a"`
