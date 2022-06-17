@@ -3,6 +3,7 @@ package properties
 import (
 	"bufio"
 	"bytes"
+	"encoding"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -33,12 +34,12 @@ func propsFromBytes(data []byte, prefix string) (*props, error) {
 			continue
 		}
 
-		parts := strings.Split(line, "=")
-		if len(parts) < 2 {
+		k, v, ok := split(line)
+		if !ok {
 			return nil, InvalidPropBytes
 		}
 		// NOTE: allow value to contain "="
-		k, v := strings.TrimSpace(parts[0]), strings.TrimSpace(strings.Join(parts[1:], "="))
+		k, v = strings.TrimSpace(k), strings.TrimSpace(v)
 
 		if prefix != "" {
 			if !strings.HasPrefix(k, prefix) {
@@ -82,10 +83,21 @@ func (p *props) value(key string, v reflect.Value) (err error) {
 }
 
 func (p *props) valueStruct(key string, v reflect.Value) error {
+	if v.Addr().Type().Implements(typTextUnmarshaler) {
+		value, ok := p.get(key)
+		if !ok {
+			return nil
+		}
+		return v.Addr().Interface().(encoding.TextUnmarshaler).UnmarshalText([]byte(value))
+	}
+
 	for i := 0; i < v.NumField(); i++ {
 		vf, tf := v.Field(i), v.Type().Field(i)
 
 		if !vf.CanInterface() {
+			continue
+		}
+		if !vf.CanSet() {
 			continue
 		}
 
@@ -100,12 +112,16 @@ func (p *props) valueStruct(key string, v reflect.Value) error {
 			continue
 		}
 
+		if kk == "" {
+			kk = tf.Name
+		}
+
 		if key != "" {
 			kk = fmt.Sprintf("%s.%s", key, kk)
 		}
 
 		if err := p.value(kk, vf); err != nil {
-			return nil
+			return err
 		}
 	}
 	return nil
@@ -157,13 +173,13 @@ func (p *props) valueBasicType(key string, v reflect.Value) error {
 		}
 		v.Set(reflect.ValueOf(fv).Convert(v.Type()))
 	case reflect.String:
-		v.Set(reflect.ValueOf(s))
+		v.Set(reflect.ValueOf(s).Convert(v.Type()))
 	case reflect.Bool:
 		bv, err := strconv.ParseBool(s)
 		if err != nil {
 			return err
 		}
-		v.Set(reflect.ValueOf(bv))
+		v.Set(reflect.ValueOf(bv).Convert(v.Type()))
 	default:
 		return UnsupportedTypeError
 	}
@@ -300,4 +316,60 @@ func (p *props) hasKeyPrefix(prefix string) bool {
 		}
 	}
 	return false
+}
+
+func split(line string) (k, v string, ok bool) {
+
+	var keyIndex int = -1
+	var pre rune
+	for i, r := range line {
+		if (r == '=' || r == ':') && pre != '\\' {
+			keyIndex = i
+			break
+		}
+		pre = r
+	}
+
+	if keyIndex < 0 {
+		return "", "", false
+	}
+	k = line[:keyIndex]
+	v = unescape(line[keyIndex+1:])
+
+	return k, v, true
+}
+
+func unescape(raw string) string {
+
+	sb := strings.Builder{}
+
+	var pre rune
+	for _, r := range raw {
+		if pre == '\\' {
+			switch r {
+			case 'f':
+				sb.WriteRune('\f')
+			case 'n':
+				sb.WriteRune('\n')
+			case '\r':
+				sb.WriteRune('\r')
+			case '\t':
+				sb.WriteRune('\t')
+			case '\\':
+				sb.WriteRune('\\')
+			case ':':
+				sb.WriteRune(':')
+			case '=':
+				sb.WriteRune('=')
+			default:
+				sb.WriteRune(r)
+			}
+		} else {
+			if r != '\\' {
+				sb.WriteRune(r)
+			}
+		}
+		pre = r
+	}
+	return sb.String()
 }

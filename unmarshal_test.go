@@ -1,8 +1,10 @@
 package properties
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUnmarshalKV__int(t *testing.T) {
@@ -72,23 +74,81 @@ func TestUnmarshalKV__empty_input(t *testing.T) {
 }
 
 func TestUnmarshalKV__string(t *testing.T) {
+	type Alias string
+
 	type S struct {
-		A string `properties:"a"`
-		B string `properties:"b"`
+		A     string `properties:"a"`
+		B     string `properties:"b"`
+		Alias Alias  `properties:"alias"`
 	}
 
 	var want = S{
-		A: "hello",
-		B: "",
+		A:     "hello",
+		B:     "",
+		Alias: Alias("alias"),
 	}
 
 	var input = map[string]string{
-		"a": "hello",
+		"a":     "hello",
+		"alias": "alias",
 	}
 
 	var given S
 	assert.NoError(t, unmarshalKV(input, &given))
 	assert.Equal(t, want, given)
+}
+
+func TestUnmarshalKV__time(t *testing.T) {
+	type S struct {
+		T time.Time `properties:"time"`
+	}
+
+	var want = S{
+		T: time.Date(2021, 8, 30, 11, 11, 11, 11, time.UTC),
+	}
+
+	var input = map[string]string{
+		"time": "2021-08-30T11:11:11.000000011Z",
+	}
+
+	var given S
+	assert.NoError(t, unmarshalKV(input, &given))
+	assert.Equal(t, want, given)
+
+	bytes, err := Marshal(want)
+
+	assert.NoError(t, err)
+
+	var given2 S
+	assert.NoError(t, Unmarshal(bytes, &given2))
+	assert.Equal(t, want, given2)
+}
+
+func TestUnmarshal_complex(t *testing.T) {
+	text := `#
+#Tue Aug 31 13:18:35 UTC 2021
+period.end_at=2021-08-29T23\:59\:59.999999999Z
+interval.unit=week
+interval.count=1
+period.start_at=2021-08-23T00\:00\:00Z
+`
+
+	var given = struct {
+		Period struct {
+			StartAt time.Time `json:"start_at" properties:"start_at"`
+			EndAt   time.Time `json:"end_at" properties:"end_at"`
+		} `json:"period" properties:"period"`
+		Interval struct {
+			Unit  string `json:"unit" properties:"unit"`
+			Count int64  `json:"count" properties:"count"`
+		} `json:"interval" properties:"interval"`
+	}{}
+
+	assert.NoError(t, Unmarshal([]byte(text), &given))
+	assert.Equal(t, int64(1), given.Interval.Count)
+	assert.Equal(t, "week", given.Interval.Unit)
+	assert.Equal(t, time.Date(2021, 8, 23, 00, 0, 0, 0, time.UTC), given.Period.StartAt)
+	assert.Equal(t, time.Date(2021, 8, 29, 23, 59, 59, 999999999, time.UTC), given.Period.EndAt)
 }
 
 func TestUnmarshalKV__float(t *testing.T) {
@@ -511,4 +571,86 @@ func TestUnmarshalKV__unexported_field_in_struct(t *testing.T) {
 	var given S
 	assert.NoError(t, unmarshalKV(input, &given))
 	assert.Equal(t, want, given)
+}
+
+func Test_split(t *testing.T) {
+	type args struct {
+		line string
+	}
+	tests := []struct {
+		name   string
+		args   args
+		wantK  string
+		wantV  string
+		wantOk bool
+	}{
+		{
+			name: "simple kv",
+			args: args{
+				line: "key=value",
+			},
+			wantK:  "key",
+			wantV:  "value",
+			wantOk: true,
+		},
+		{
+			name: "escaped key",
+			args: args{
+				line: "k\\=ey=value",
+			},
+			wantK:  "k\\=ey",
+			wantV:  "value",
+			wantOk: true,
+		},
+		{
+			name: "escaped value",
+			args: args{
+				line: "key=v\\=alue",
+			},
+			wantK:  "key",
+			wantV:  "v=alue",
+			wantOk: true,
+		},
+		{
+			name: "invalid line",
+			args: args{
+				line: "key\\=",
+			},
+			wantK:  "",
+			wantV:  "",
+			wantOk: false,
+		},
+		{
+			name: "empty value",
+			args: args{
+				line: "key=",
+			},
+			wantK:  "key",
+			wantV:  "",
+			wantOk: true,
+		},
+		{
+			name: "empety key",
+			args: args{
+				line: "=value",
+			},
+			wantK:  "",
+			wantV:  "value",
+			wantOk: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotK, gotV, gotOk := split(tt.args.line)
+			if gotK != tt.wantK {
+				t.Errorf("split() gotK = %v, want %v", gotK, tt.wantK)
+			}
+			if gotV != tt.wantV {
+				t.Errorf("split() gotV = %v, want %v", gotV, tt.wantV)
+			}
+			if gotOk != tt.wantOk {
+				t.Errorf("split() gotOk = %v, want %v", gotOk, tt.wantOk)
+			}
+		})
+	}
 }
